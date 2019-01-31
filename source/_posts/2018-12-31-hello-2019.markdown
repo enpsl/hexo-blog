@@ -1,0 +1,79 @@
+---
+layout:     post
+title:      "Hello 2019"
+subtitle:   " \"Hello World, Hello Blog\""
+date:       2018-12-31 12:00:00
+author:     "Psl"
+header-img: "img/post-bg-2019.jpg"
+catalog: true
+tags:
+    - 生活
+    - Meta
+---
+
+> “Yeah It's on. ”
+
+
+## 前言
+
+Psl 的 Blog 就这么开通了。
+
+[跳过废话，直接看技术实现 ](#build) 
+
+
+
+2019 年，Psl 总算有个地方可以好好写点东西了。
+
+
+之前一直就有开个博客的想法，但是一直没有开。以前自己学过的知识都是记录在自己的笔记中，
+但是久而久之却发现一个问题，那就是如果记录的笔记规划不好的话就会丢失，在遇到问题翻以
+前的记录时也并不好找，不过偶然间在github发现了[GitHub Pages](https://pages.github.com/) 
+这个有意思的东东，可以很快的搭建出一个博客，还省了弄域名的功夫，觉得不错就花了几个小时的
+时间搞了下
+
+<p id = "build"></p>
+---
+
+## 正文
+
+接下来说说搭建这个博客的技术细节。  
+
+实现依赖工具 [GitHub Pages](https://pages.github.com/) + [Jekyll](http://jekyllrb.com/) 快速 Building Blog 的技术方案，非常轻松时尚。
+
+其优点非常明显：
+
+* **Markdown** 带来的优雅写作体验
+* 非常熟悉的 Git workflow ，**Git Commit 即 Blog Post**
+* 利用 GitHub Pages 的域名和免费无限空间，不用自己折腾主机
+	* 如果需要自定义域名，也只需要简单改改 DNS 加个 CNAME 就好了 
+* Jekyll 的自定制非常容易，基本就是个模版引擎
+
+---
+进入主题我直接 Download 了 Hux的博客主题 的进行修改，简单粗暴，不过遇到了很多坑😂，好在都填完了。。。
+
+简要说明一下步骤：
+
+一 ：安装Ruby
+
+二 ：安装RubyGems
+
+三：用RubyGems安装Jekyll
+
+四：cd到博客文件夹，开启服务器
+
+五：访问 http://localhost:4000/
+
+六：提交代码到远程GitHub上
+
+本地调试环境需要 ```gem install jekyll```，结果 rubygem 的源居然被墙了，后来上网查资料告诉要切话我们的大淘宝镜像，但是切换过程中又出现404错误
+后来查资料才发现淘宝的源已经停止维护，又换成了OSChina的源 https://gems.ruby-china.org/
+
+## 后记
+
+回顾这个博客的诞生，纯粹是出于个人兴趣。希望自己可以利用闲暇时间写点什么
+
+如果你恰好逛到了这里，希望你也能喜欢这个博客主题。
+
+—— Psl 后记于 2018.12
+
+

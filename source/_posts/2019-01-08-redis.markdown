@@ -1,0 +1,150 @@
+---
+layout:     post
+title:      "Redis持久化"
+subtitle:   "Redis持久化的两种方式"
+date:       2018-10-01 13:30:00
+author:     "Psl"
+header-img: "img/post-bg-desk.jpg"
+catalog:    true
+tags:
+  - redis
+---
+
+## 前言
+话不多说直奔主题...
+
+## RDB
+### 主要触发机制
+
+#### save
+
+**cli命令:** save
+
+**文件策略：** 如果存在老的RDB文件，新的将其替换掉
+
+**时间复杂度：** O(n)
+
+我们把客户端和服务端用一个图来表示，save时会帮我们生成一个RDB文件
+![](/img/in-post/2019-01-08/1.png)
+
+> 由于它是同步命令，并且在单线程中执行,在数据量非常多的时候，此时执行save命令，他会将数据进行完整拷贝，可能会造成redis阻塞。
+
+
+#### bgsave
+![](/img/in-post/2019-01-08/2.png)
+
+>通过在后台fork一个子进程完成复制
+
+#### 自动
+
+根据REDIS配置定时同步数据到RDB文件
+<table><tr><th>配置</th><th>Seconds</th><th>Changes</th></tr><tr><td>save</td><td>900</td><td>1</td></tr><tr><td>save</td><td>300</td><td>10</td></tr><tr><td>save</td><td>60</td><td>10000</td></tr></table>
+
+> eg:60秒中改变了10000次会发生备份RDB
+
+#### 触发机制-不容忽略的方式
+
+* 全量复制
+* Debug Reload
+* shutdown
+
+### save or bgsave ?
+<table><tr><th>命令</th><th>save</th><th>bgsave</th></tr><tr><td>IO类型</td><td>同步</td><td>异步</td></tr><tr><td>阻塞</td><td>是</td><td>发生在fork时</td></tr><tr><td>复杂度</td><td>O(N)</td><td>O(N)</td></tr><tr><td>优点</td><td>不会消耗内存</td><td>不阻塞客户端命令</td></tr><tr><td>缺点</td><td>阻塞客户端命令</td><td>消耗内存</td></tr></table>
+### 配置
+```
+save 900 1
+save 300 10
+save 60 10000
+dbfilename dump.rdb
+dir ./
+stop-writes-on-bgsave-error yes //bgsave出现问题会停止写入
+rdbcompression yes  //压缩模式
+rdbchecksum yes //对RDB进行校验和检验
+```
+#### 最佳配置
+```
+dbfilename dump-${port}.rdb
+dir bigdiskpath //选择大的硬盘
+stop-writes-on-bgsave-error yes //bgsave出现问题会停止写入
+rdbcompression yes  //压缩模式
+rdbchecksum yes //对RDB进行校验和检验
+```
+
+### 小结
+* RDB是Redis内存到硬盘的快照，用于持久化
+* save通常会阻塞Redis
+* bgsave不会阻塞Redis，但是会fork子进程
+* save自动配置满足其一就会被执行
+* 有些触发机制不容忽视
+
+### RDB问题
+
+**耗时耗性能**
+> O(N)数据耗时<br>
+> fork耗内存<br>
+> Disk I/O:IO性能
+
+**不可控丢失数据**
+<table><tr><th>时间戳</th><th>save</th></tr><tr><td>T1</td><td>执行多个命令</td></tr><tr><td>T2</td><td>满足RDB自动创建条件</td></tr><tr><td>T3</td><td>再次执行多条命令</td></tr><tr><td>T4</td><td>宕机</td></tr></table>
+
+> 宕机会发生数据丢失
+
+## AOF
+
+### 三种策略
+
+#### everysec
+![](/img/in-post/2019-01-08/4.png)
+
+#### always
+
+同everysec流程，只不过always会把每条命令都写入到AOF文件中
+
+#### no
+
+由操作系统来决定是否刷新
+
+#### 比较
+<table><tr><th>命令</th><th>always</th><th>everysec</th><th>no</th></tr><tr><td>优点</td><td>不丢失数据</td><td>每秒一次fsync丢1秒数据</td><td>不用管理</td></tr><tr><td>缺点</td><td>IO开销比较大</td><td>丢1秒数据</td><td>不可控</td></tr></table>
+### AOF重写
+
+#### 作用
+
+* 减少硬盘占用量
+* 加快回复速度
+
+### 重写两种方式
+
+#### bgrewriteaof
+
+**命令：bgrewriteaof**
+
+![](/img/in-post/2019-01-08/6.png)
+
+**重写配置**
+<table><tr><th>配置名</th><th>含义</th></tr><tr><td>auto-aof-rewirte-min-size</td><td>auto-aof-rewirte-percentage</td></tr><tr><td>AOF文件重写尺寸</td><td>AOF文件增长率</td></tr></table>
+**统计**
+<table><tr><th>统计名</th><th>含义</th></tr><tr><td>auto-current-size</td><td>auto-base-size</td></tr><tr><td>AOF当前尺寸</td><td>AOF上次启动和重写的尺寸</td></tr></table>
+#### 自动触发时机
+
+* auto-current-size > auto-aof-rewirte-min-size
+* (auto-current-size - auto-base-size) / auto-base-size > auto-aof-rewirte-percentage
+
+### AOF重写流程
+
+![](/img/in-post/2019-01-08/8.jpg)
+
+### 配置
+
+* appendonly yes
+* appendfilename "appendonly-${port}.aof"
+* appendfsync everysec
+* dir /bigdisk
+* no-appendfsync-on-rewrite no  //aof重写失败是否允许丢失数据
+* auto-aof-rewrite-percentage 100   //增长率
+* auto-aof-rewrite-min-size 64mb    //最小尺寸
+
+## RDB 和 AOF 抉择
+<table><tr><th>命令</th><th>RDB</th><th>AOF</th></tr><tr><td>启动优先级</td><td>低</td><td>高</td></tr><tr><td>体积</td><td>小</td><td>大</td></tr><tr><td>恢复速度</td><td>快</td><td>慢</td></tr><tr><td>数据安全性</td><td>丢数据</td><td>根据策略决定</td></tr><tr><td>轻重</td><td>重</td><td>轻</td></tr></table>
+
+
