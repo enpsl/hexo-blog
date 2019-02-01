@@ -142,6 +142,7 @@ menu:
   tags: /tags/ || tags
   #categories: /categories/ || th
   archives: /archives/ || archive
+  golang-notes: /golang-note/ || book
   #schedule: /schedule/ || calendar
   #sitemap: /sitemap.xml || sitemap
   #commonweal: /404/ || heartbeat

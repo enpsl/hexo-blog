@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
+title: 彭诗亮的博客
 subtitle:
 description: my blog
-keywords:
+keywords: 彭诗亮 psl pengshiliang blog
 author: enpsl
 language: zh-CN
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://enpsl.github.io/hexo
+url: https://enpsl.github.io
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -83,7 +83,9 @@ search:
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
-  type:
+  type: git
+  repo: https://github.com/enpsl/hexo.git
+  branch: master
 
 symbols_count_time:
  #文章内是否显示
