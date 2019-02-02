@@ -84,7 +84,7 @@ search:
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/enpsl/hexo.git
+  repo: https://github.com/enpsl/enpsl.github.io.git
   branch: master
 
 symbols_count_time:
