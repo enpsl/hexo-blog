@@ -112,7 +112,7 @@ export default TodoList
 
 ## 实现一个todolist
 
-#### todolist新增功能
+### todolist新增功能
 利用在React中state数据变化dom也会变化的特性：
 
 ```react
@@ -174,7 +174,7 @@ es5的map方法中必须指定一个key值否则会报错
 </ul>
 ```
 
-#### todolist删除功能
+### todolist删除功能
 
 ```react
 <ul>
@@ -200,7 +200,7 @@ handleDelete (index) {
 
 >在handleDelete方法中，不推荐使用this.state.list.splice(index, 1),原因见注释
 
-#### label属性
+### label属性
 ```react
 <label htmlFor="insertArea">输入内容</label>
 <input
@@ -210,7 +210,7 @@ handleDelete (index) {
 />
 ```
 
-#### 组件拆分
+### 组件拆分
 
 我们把li标签中的内容注释掉并提取出来封装为一个组件
 ```react
@@ -246,7 +246,7 @@ export default ToDoItem
 
 > 此时点击提交按钮每次新增的都是一个固定的item值，这也不是我们想要的
 
-#### 组件动态传值
+### 组件动态传值
 我们可以利用组件传值解决上面的问题，代码做如下修改
 传递数据:
 ```react
@@ -294,7 +294,7 @@ class ToDoItem extends Component{
 单向数据流：
 **子组件不能修改父组件传递的数据值，如果要修改只能通过父组件向子组件传递方法来修改**
 
-#### 代码优化
+### 代码优化
 TodoList
 
 ```react

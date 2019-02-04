@@ -19,14 +19,14 @@ tags:
 
 ## 扩容集群
 
-#### 准备新节点
+### 准备新节点
 新节点：
 * 集群模式
 * 配置和其它节点统一
 * 启动后仍是孤儿节点
 
 ![](/img/in-post/2019-01-23/3.png)
-#### 加入集群
+### 加入集群
 ```
 cluster meet 127.0.0.1 6385
 cluster meet 127.0.0.1 6386
@@ -43,13 +43,13 @@ redis-cli --cluster add-node new_host:new_port existing_host:existing_port --clu
 ```
 > 建议使用redis-trib.rb能够避免新节点已经加入了其它集群，造成故障
 
-#### 迁移槽和数据
+### 迁移槽和数据
 
-###### 槽迁移计划:
+#### 槽迁移计划:
 ![](/img/in-post/2019-01-23/6.png)
 ![](/img/in-post/2019-01-23/7.png)
 
-###### 迁移数据：
+#### 迁移数据：
 1. 对目标节点发送: cluster setslot{slot} importing {sourceNodeId}命令，让目标节点准备导入槽的数据。
 2. 对源节点发送: cluster setslot{slot} migrating {targetNodeId}命令，让源节点准备迁出槽的数据。
 3. 源节点循环执行: cluster getkeysinslot{slot}{count}命令，每次获取count个属于槽的键。
@@ -57,7 +57,7 @@ redis-cli --cluster add-node new_host:new_port existing_host:existing_port --clu
 5. 重复执行3-4直到槽下所有数据节点均迁移到目标节点。
 6. 向集群内所有主节点发送cluster setslot{slot} node {targetNodeId}命令，通知槽分配给目标节点。
 
-###### 数据迁移伪python代码:
+#### 数据迁移伪python代码:
 ```python
 def move_slot(source,target,slot):
     #目标节点准备导入槽slot
@@ -79,7 +79,7 @@ def move_slot(source,target,slot):
         node.cluster("setslot",slot,"node",target.nodeID)
 ```
 
-###### pipline迁移
+#### pipline迁移
 
 ![](/img/in-post/2019-01-23/8.png)
 
@@ -87,7 +87,7 @@ def move_slot(source,target,slot):
 
 ## 扩容演示
 
-#### 环境准备
+### 环境准备
 ![](/img/in-post/2019-01-23/9.png)
 当前集群是三主三从结构，此时我们加入两个新节点7006,7007。7007是7006的从节点，我们需要从7001,7002节点把一部分数据迁移给7006。
 配置准备:
@@ -95,19 +95,19 @@ def move_slot(source,target,slot):
 sed 's/7000/7006/g' redis-7000.conf > redis-7006.conf
 sed 's/7000/7007/g' redis-7000.conf > redis-7007.conf
 ```
-#### meet:
+### meet:
 ```bash
 redis-cli -p 7000 cluster meet 127.0.0.1 7006
 redis-cli -p 7000 cluster meet 127.0.0.1 7007
 ```
-#### replicate:
+### replicate:
 ```bash
 redis-cli -p 7007 cluster replicate d57d27051ce9db7752f894394b621368f9e0a058
 ```
 ![](/img/in-post/2019-01-23/10.png)
 > 此时7007已经属于7006的从节点
 
-#### 迁移数据：
+### 迁移数据：
 >由于槽数量比较多，所以这里使用redis-trib来迁移
 ```
 redis-cli --cluster reshard 127.0.0.1 7000
@@ -123,22 +123,22 @@ redis-cli --cluster reshard 127.0.0.1 7000
 
 ## 收缩集群
 
-#### 下线迁移槽
+### 下线迁移槽
 
 ![](/img/in-post/2019-01-23/15.png)
 
-#### 忘记节点
+### 忘记节点
 ```bash
 redis-cli>cluster forget {downNodeId}
 ```
 ![](/img/in-post/2019-01-23/16.png)
-#### 关闭节点
+### 关闭节点
 
 ## 收缩集群演示
 
 例：下线7006，7007
 
-#### 迁移槽：
+### 迁移槽：
 
 迁移过程命令：
 
@@ -160,14 +160,14 @@ redis-cli --cluster reshard --cluster-from d57d27051ce9db7752f894394b621368f9e0a
 迁移后：
 ![](/img/in-post/2019-01-23/18.png)
 
-#### 忘记节点：
+### 忘记节点：
 ```bash
 redis-cli --cluster del-node 127.0.0.1:7000 d57d27051ce9db7752f894394b621368f9e0a058
 ```
 
 >需要先下线从节点在下线主节点，否则会发生故障转移
 
-#### 完成缩容
+### 完成缩容
 ![](/img/in-post/2019-01-23/19.png)
 
 

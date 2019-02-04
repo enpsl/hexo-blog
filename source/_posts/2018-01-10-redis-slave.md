@@ -27,7 +27,7 @@ redis怎么实现高可用，机器故障的问题
 * 提供多个数据分布
 * 扩展redis读性能
 
-#### 简单总结
+### 简单总结
 * 一个master可以有多个slave
 * 一个slave只能有一个master
 * 数据流向是单向的，master到slave
@@ -93,7 +93,7 @@ redis-cli
 
 ## runid和复制偏移量
 
-#### runid
+### runid
 redis每次启动后都会随机生成一个runid执行：
 
 ```
@@ -103,7 +103,7 @@ redis-cli -p 6380 info server |grep run
 
 > redis每次重启runid会发生变化，redis从节点每次会检测主节点runid变化来进行一次全量复制
 
-#### 偏移量
+### 偏移量
 
 主节点和从节点都会记录执行一条命令时数据写入的字节数，当偏移量达到一致时，数据才会同步完成
 

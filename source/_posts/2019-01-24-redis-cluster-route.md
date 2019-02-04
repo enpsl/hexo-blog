@@ -14,7 +14,7 @@ tags:
 
 ![](/img/in-post/2019-01-24/1.png)
 
-#### 槽命中：直接返回
+### 槽命中：直接返回
 ![](/img/in-post/2019-01-24/2.png)
 
 算出key的slot值
@@ -25,7 +25,7 @@ tags:
 ```
 (integer) 866
 ```
-#### 槽不命中：moved异常
+### 槽不命中：moved异常
 算出key的slot值
 ```
 >127.0.0.1> 6379 cluster keyslot php
@@ -79,7 +79,7 @@ redis-cli -p 7000
 
 ## smart客户端
 
-#### 基本原理
+### 基本原理
 追求性能：
 1. 从集群中选一个可运行的节点，使用cluster slots 初始化槽和节点映射
 2. 将cluster slots结果映射到本地，为每个节点创建redisPool
@@ -91,16 +91,16 @@ redis-cli -p 7000
 > 关于redis cluster 客户端使用可参考
 [redis-go-cluster](https://github.com/enpsl/redis-go-cluster/tree/master/example)
 
-#### 批量操作优化
+### 批量操作优化
 **批量操作怎么实现?meget meset必须在一个槽**
-###### 串行mget 
+#### 串行mget 
 ![](/img/in-post/2019-01-24/8.png)
-###### 串行IO
+#### 串行IO
 ![](/img/in-post/2019-01-24/9.png)
-###### 并行IO
+#### 并行IO
 ![](/img/in-post/2019-01-24/10.png)
-###### hash_tag
+#### hash_tag
 ![](/img/in-post/2019-01-24/11.png)
 
-#### 四种方案优缺点对比
+### 四种方案优缺点对比
 <table><tr><td>方案</td><td>优点</td><td>缺点</td><td>网络IO</td></tr><tr><td>串行mget</td><td>编程简单，少量keys满足需求</td><td>大量keys请求延迟严重</td><td>O(keys)</td></tr><tr><td>串行IO</td><td>编程简单，少量节点满足需求</td><td>大量node延迟严重</td><td>O(nodes)</td></tr><tr><td>并行IO</td><td>利用并行特性，延迟取决于最慢的节点</td><td>编程复杂，超市定位问题难</td><td>O(max(node))</td></tr><tr><td>hash_tag</td><td>性能最高</td><td>读写增加tag维护成本，tag分布易出现数据倾斜</td><td>O(1))</td></tr></table>

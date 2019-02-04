@@ -27,7 +27,7 @@ tags:
 Redis主节点
 启动```redis-server redis-7000.conf```
 
-#### redis配置:
+### redis配置:
 主节点:
 ```
 port 7000
@@ -53,7 +53,7 @@ logfile 7002.log
 dir "${redis-src}/data/"
 slaveof 127.0.0.1 7000
 ```
-#### sentinel配置:
+### sentinel配置:
 
 ```
 port ${port}
@@ -65,7 +65,7 @@ sentinel parallel-sync mymaster 1
 sentinel failover-timeout mymaster 180000
 ```
 
-#### 安装演示
+### 安装演示
 **配置redis**
 > 单机演示实际为能相互ping通的多台机器
 
@@ -228,7 +228,7 @@ go run client.go
 
 ## 故障转移
 
-#### 三个定时任务
+### 三个定时任务
 
 1. 每10秒每个sentinel对master和slave执行info
 * 发现slave节点
@@ -239,12 +239,12 @@ go run client.go
 3. 每1秒每个Sentinel对其它Sentinel和Redis执行ping
 * 失败判定依据，心跳检测
 
-#### 主观下线和客观下线
+### 主观下线和客观下线
 
 * 主观下线：每个sentinel节点对Redis节点失败的偏见
 * 客观下线：所有sentinel节点对Redis节点失败达成共识（quorum:建议节点数/2+1）
 
-#### 领导者选举
+### 领导者选举
 
 * 原因：只有一个sentinel节点完成故障转移
 * 选举：通过sentinel is-master-down-by-addr命令都希望成为领导者
@@ -253,14 +253,14 @@ go run client.go
 3. 如果该Sentinel节点发现通过的票数已经超过Sentinel集合半数且超过quorum，那么它将成为领导者
 4. 如果此过程中有多个Sentinel节点成为领导者，那么将等待一段时间重新选举
 
-#### 故障转移
+### 故障转移
 
 1. 从slave节点选出一个"合适的"节点作为新的master节点
 2. 对上面的slave节点执行```slaveof no one``` 命令让其成为master节点
 3. 向剩余的slave节点发送命令，让他们成为新master节点的slave节点，复制规则和parallel-syncs参数有关
 4. 更新原来的master节点并配置为slave,并保持对其"关注"，当其恢复后，命令他去复制新的master节点
 
-#### 选择"合适的"slave节点
+### 选择"合适的"slave节点
 
 1. 选择slave-priority(slave节点优先级)最高的slave节点。如果存在则返回，不存在则继续
 2. 选择复制偏移量最大的slave节点(复制的最完整)如果存在则返回，不存在则继续
