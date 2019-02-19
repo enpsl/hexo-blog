@@ -1,0 +1,78 @@
+{
+  "head":{
+    "name":"彭诗亮",
+    "intention":"后端开发",
+    "tel":"18210276551",
+    "email":"1390509500@qq.com",
+    "address":"北京昌平",
+    "birthday":"1993.12.6",
+    "sex":"男",
+    "school":"哈尔滨师范大学",
+    "graduation":"本科",
+    "graduationTime":"2012-9-1 至 2016-7-1",
+    "major":"计算机科学与技术",
+    "honor":"2014年省电子科技大赛3等奖",
+    "interest":"骑行、编程、音乐、攀岩",
+    "speciality":"js、css、html",
+    "specialityPer":"40、50、60"
+  },
+  "blogLink":{
+    "github":"https://github.com/enpsl",
+    "blog":"https://enpsl.top"
+  },
+  "workExperience":{
+    "time":"2015-12 至 今",
+    "experience":[
+      {
+        "name":"名称",
+        "skill":"技能",
+        "time":"时间",
+        "describe":[
+          "描述"
+        ]
+      }
+    ]
+  },
+  "projectExperience":{
+    "time":"",
+    "experience":[
+      {
+        "name":"React项目构建三部曲",
+        "skill":"react+react-Redux+react-router+ES6",
+        "time":"2017.3",
+        "describe":[
+          "构建适合React项目开发的脚手架"
+        ]
+      }
+    ]
+  },
+  "skill":[
+    {
+      "type":"构建工具",
+      "describe":[
+        "熟练使用gulp,webpack构建项目"
+      ]
+    },
+    {
+      "type":"框架",
+      "describe":[
+        "熟悉 jQuery,Bootstrap",
+        "了解react"
+      ]
+    },
+    {
+      "type":"-",
+      "describe":[
+        "熟悉 js,能使用原生js完成一般项目的开发",
+        "熟悉css,scss,以及css3的以下新特性",
+        "熟悉 html5,能写出语义化网页",
+        "熟悉网页优化",
+        "了解网络安全,懂得项目运维"
+      ]
+    }
+  ],
+  "selfAssessment":[
+    "   鲁迅先生曾说过:世上本没有路,走的人多了便成了路"
+  ]
+
+}
