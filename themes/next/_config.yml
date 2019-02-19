@@ -143,6 +143,7 @@ menu:
   #categories: /categories/ || th
   archives: /archives/ || archive
   golang-notes: /golang-note/ || book
+  resume: /resume/ || sticky-note
   #schedule: /schedule/ || calendar
   #sitemap: /sitemap.xml || sitemap
   #commonweal: /404/ || heartbeat
