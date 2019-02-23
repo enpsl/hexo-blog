@@ -520,7 +520,7 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps)(withRouter(Counter))
 ```
 
-### 在effects中的路由跳转
+#### 在effects中的路由跳转
 
 修改src/models/counter.js
 
@@ -571,6 +571,48 @@ import {queryString} from 'query-string'
 }
 ```
 点击按钮后跳转到[http://localhost:8000/?from=psl](http://localhost:8000/?from=psl)
+
+### subscriptions
+
+#### dispatch
+
+监听窗口改变触发add/num方法:
+```jsx harmony
+subscriptions: {
+    setup({ dispatch, history }) {  // eslint-disable-line
+      window.onresize = () => {
+        dispatch({type: 'add/num'});
+      }
+    },
+},
+```
+>setup可以为多个，可以同时订阅多个监听事件
+
+#### history
+
+````jsx harmony
+setupHistory({ dispatch, history }) {  // eslint-disable-line
+  history.listen((location) => {
+    console.log(location)
+  })
+},
+````
+控制台输出：
+
+![](/img/in-post/2019-02-23/15.png)
+
+可以发现location中包含pathname,search,hash,state等参数，我们可以通过析构对象来做一些特殊事情
+
+例如：
+```jsx harmony
+setupHistory({ dispatch, history }) {  // eslint-disable-line
+  history.listen(({pathname}) => {
+    if (pathname === "/counter") {
+      dispatch({type: 'add/num'});
+    }
+  })
+},
+```
 
 
 
