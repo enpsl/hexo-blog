@@ -138,7 +138,7 @@ docker service create --name wordpress -p 80:80 --env WORDPRESS_DB_PASSWORD=root
 
 ## docker stack
 
-### docker stack 语法梳理
+### docker-compose 语法梳理
 
 #### ENDPOINT_MODE
 
@@ -336,11 +336,11 @@ docker stack ls 列举stack
 
 docker stack ps wordpress 查看wordpress运行情况
 
-![avatar](/img/in-post/2019-03-06/Snip20190308_5.png)
+![avatar](/img/in-post/2019-03-08/Snip20190308_5.png)
 
 看到如下界面配置成功
 
-![avatar](/img/in-post/2019-03-06/Snip20190308_6.png)
+![avatar](/img/in-post/2019-03-08/Snip20190308_6.png)
 
 
 清空环境
