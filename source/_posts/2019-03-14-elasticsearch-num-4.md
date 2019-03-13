@@ -8,7 +8,7 @@ catalog:    true
 tags:
   - elastic
 ---
-0
+
 ## mapping
 
 mapping是类似于数据库中的表结构定义，主要作用如下：
