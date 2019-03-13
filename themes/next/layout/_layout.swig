@@ -120,4 +120,5 @@
   {% include '_third-party/copy-code.swig' %}
   {% include '_third-party/pdf.swig' %}
 </body>
+<script type="text/javascript" src="/js/src/wechat.js"></script>
 </html>
