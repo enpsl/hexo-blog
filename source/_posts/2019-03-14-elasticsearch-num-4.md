@@ -18,7 +18,7 @@ mapping是类似于数据库中的表结构定义，主要作用如下：
 - 定义倒排索引相关的设置，比如是否索引、记录position等
 
 ```http request
-PUT test_index/doc/1
+PUT test_index/_doc/1
 {
   "username": "jack",
   "age": 15
@@ -35,8 +35,7 @@ GET test_index/_mapping
 PUT my_index
 {
   "mappings": {
-    "doc": {
-      "dynamic": false,
+    "dynamic": false,
       "properties": {
         "username": {
           "type": "keyword"
@@ -45,7 +44,6 @@ PUT my_index
           "type": "integer"
         }
       }
-    }
   }
 }
 ```
@@ -61,7 +59,7 @@ strict：严格模式，文档不能写入，报错
 然后写入一个文档:
 
 ```http request
-PUT my_index/doc/1
+PUT my_index/_doc/1
 {
   "username": "lili",
   "desc": "this is my index",
@@ -73,7 +71,7 @@ PUT my_index/doc/1
 
 查询文档
 ```http request
-GET my_index/doc/_search
+GET my_index/_search
 {
   "query": {
     "match": {
@@ -84,7 +82,7 @@ GET my_index/doc/_search
 ```
 
 ```http request
-GET my_index/doc/_search
+GET my_index/_search
 {
   "query": {
     "match": {
@@ -94,8 +92,60 @@ GET my_index/doc/_search
 }
 ```
 
-![](/img/in-post/2019-03-14/2.png)
-![](/img/in-post/2019-03-14/3.png)
+```json
+{
+  "took" : 1,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 1,
+      "relation" : "eq"
+    },
+    "max_score" : 0.2876821,
+    "hits" : [
+      {
+        "_index" : "my_index",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_score" : 0.2876821,
+        "_source" : {
+          "username" : "lili",
+          "desc" : "this is my index",
+          "age" : "20"
+        }
+      }
+    ]
+  }
+}
+
+```
+```json
+{
+  "took" : 1,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 0,
+      "relation" : "eq"
+    },
+    "max_score" : null,
+    "hits" : [ ]
+  }
+}
+
+```
 
 对比两个结果可以看出能通过mapping中设置的字段查询到
 
@@ -107,19 +157,17 @@ GET my_index/doc/_search
 PUT my_index2
 {
   "mappings": {
-    "doc": {
-      "properties": {
-        "first_name": {
-          "type": "text",
-          "copy_to": "full_name"
-        },
-        "last_name": {
-          "type": "text",
-          "copy_to": "full_name"
-        },
-        "full_name" : {
-          "type": "text"
-        }
+    "properties": {
+      "first_name": {
+        "type": "text",
+        "copy_to": "full_name"
+      },
+      "last_name": {
+        "type": "text",
+        "copy_to": "full_name"
+      },
+      "full_name": {
+        "type": "text"
       }
     }
   }
@@ -128,7 +176,7 @@ PUT my_index2
 
 PUT：
 ```http request
-PUT my_index2/doc/1
+PUT my_index2/_doc/1
 {
   "first_name": "David",
   "last_name": "john"
@@ -150,6 +198,40 @@ GET my_index2/_search
 }
 ```
 
+返回结果:
+
+```json
+{
+  "took" : 316,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 1,
+      "relation" : "eq"
+    },
+    "max_score" : 0.5753642,
+    "hits" : [
+      {
+        "_index" : "my_index2",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_score" : 0.5753642,
+        "_source" : {
+          "first_name" : "David",
+          "last_name" : "john"
+        }
+      }
+    ]
+  }
+}
+
+```
 >可以通过full_name来查询first_name，lastname两个字段，并且不区分大小写，但是一旦有一个字段的值匹配不上，就会返回为空
 
 ### Index
@@ -160,16 +242,14 @@ index参数作用是控制当前字段是否被索引，默认为true，false表
 PUT my_index3
 {
   "mappings": {
-    "doc": {
-      "properties": {
-        "cookie": {
-          "type": "text",
-          "index": false
-        },
-        "content": {
-          "type": "text",
-          "index": true
-        }
+    "properties": {
+      "cookie": {
+        "type": "text",
+        "index": false
+      },
+      "content": {
+        "type": "text",
+        "index": true
       }
     }
   }
@@ -177,7 +257,7 @@ PUT my_index3
 ```
 
 ```http request
-PUT my_index3/doc/1
+PUT my_index3/_doc/1
 {
   "cookie": "efdfsdiadsasd",
   "content": "this is a cookie"
@@ -203,7 +283,42 @@ GET my_index3/_search
   }
 ```
 cookie字段不可被查询
-![](/img/in-post/2019-03-14/4.png)
+```json
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "query_shard_exception",
+        "reason": "failed to create query: {\n  \"match\" : {\n    \"cookie\" : {\n      \"query\" : \"efdfsdiadsasd\",\n      \"operator\" : \"OR\",\n      \"prefix_length\" : 0,\n      \"max_expansions\" : 50,\n      \"fuzzy_transpositions\" : true,\n      \"lenient\" : false,\n      \"zero_terms_query\" : \"NONE\",\n      \"auto_generate_synonyms_phrase_query\" : true,\n      \"boost\" : 1.0\n    }\n  }\n}",
+        "index_uuid": "5iLoJa4vRmiWA23sZ8-4TQ",
+        "index": "my_index3"
+      }
+    ],
+    "type": "search_phase_execution_exception",
+    "reason": "all shards failed",
+    "phase": "query",
+    "grouped": true,
+    "failed_shards": [
+      {
+        "shard": 0,
+        "index": "my_index3",
+        "node": "IWeH0fFvQD604ZiJ9OAdRw",
+        "reason": {
+          "type": "query_shard_exception",
+          "reason": "failed to create query: {\n  \"match\" : {\n    \"cookie\" : {\n      \"query\" : \"efdfsdiadsasd\",\n      \"operator\" : \"OR\",\n      \"prefix_length\" : 0,\n      \"max_expansions\" : 50,\n      \"fuzzy_transpositions\" : true,\n      \"lenient\" : false,\n      \"zero_terms_query\" : \"NONE\",\n      \"auto_generate_synonyms_phrase_query\" : true,\n      \"boost\" : 1.0\n    }\n  }\n}",
+          "index_uuid": "5iLoJa4vRmiWA23sZ8-4TQ",
+          "index": "my_index3",
+          "caused_by": {
+            "type": "illegal_argument_exception",
+            "reason": "Cannot search on field [cookie] since it is not indexed."
+          }
+        }
+      }
+    ]
+  },
+  "status": 400
+}
+```
 
 ### index_options
 
@@ -222,12 +337,10 @@ index_options设定：
 PUT my_index4
 {
   "mappings": {
-    "doc": {
-      "properties": {
-        "text": {
-          "type": "text",
-          "index_options": "offsets"
-        }
+    "properties": {
+      "text": {
+        "type": "text",
+        "index_options": "offsets"
       }
     }
   }
@@ -235,7 +348,7 @@ PUT my_index4
 ```
 PUT:
 ```http request
-PUT my_index4/doc/1
+PUT my_index4/_doc/1
 {
   "text": "Quick brown fox"
 }
@@ -257,8 +370,41 @@ GET my_index4/_search
 }
 ```
 
-![](/img/in-post/2019-03-14/5.png)
-
+```json
+{
+  "took" : 68,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 1,
+      "relation" : "eq"
+    },
+    "max_score" : 0.5753642,
+    "hits" : [
+      {
+        "_index" : "my_index4",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_score" : 0.5753642,
+        "_source" : {
+          "text" : "Quick brown fox"
+        },
+        "highlight" : {
+          "text" : [
+            "Quick <em>brown</em> <em>fox</em>"
+          ]
+        }
+      }
+    ]
+  }
+}
+```
 brown fox会被高亮显示
 
 ### null_value
@@ -269,12 +415,10 @@ brown fox会被高亮显示
 PUT my_index5
 {
   "mappings": {
-    "_doc": {
-      "properties": {
-        "status_code": {
-          "type":       "keyword",
-          "null_value": "NULL" 
-        }
+    "properties": {
+      "status_code": {
+        "type": "keyword",
+        "null_value": "NULL"
       }
     }
   }
@@ -299,9 +443,36 @@ GET my_index5/_search
   }
 }
 ```
-
-![](/img/in-post/2019-03-14/6.png)
-
+```json
+{
+  "took" : 1,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 1,
+    "successful" : 1,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : {
+      "value" : 1,
+      "relation" : "eq"
+    },
+    "max_score" : 0.2876821,
+    "hits" : [
+      {
+        "_index" : "my_index5",
+        "_type" : "_doc",
+        "_id" : "1",
+        "_score" : 0.2876821,
+        "_source" : {
+          "status_code" : null
+        }
+      }
+    ]
+  }
+}
+```
 1. 用术语null替换显式null值。
 2. 空数组不包含显式null，因此不会用null_value替换。
 3. 对NULL的查询返回文档1，而不是文档2。
@@ -330,7 +501,34 @@ null_value只影响数据的索引方式，它不修改_source文档。
 **多字段特性**
 - 多字段特性（multi-fields），表示允许对同一字段采用不同的配置，比如分词。
 
-常见例子是对人名实现拼音搜索，只需要在人名中新增一个字段pinyin即可。但是这种方式不是十分优雅，multi-fields可以在不改变整体结构的前提下，增加一个子字段： 
+常见例子是对人名实现拼音搜索，只需要在人名中新增一个字段pinyin即可。但是这种方式不是十分优雅，multi-fields可以在不改变整体结构的前提下，增加一个子字段：
+
+```http request
+PUT my_index6
+{
+  "mappings": {
+    "properties": {
+      "username": {
+        "type": "text",
+        "fields": {
+            "pinyin": {
+                "type": "text",
+                "analyzer": "pinyin"
+            }
+        }
+      }
+    }
+  }
+}
+GET my_index6
+{
+  "query": {
+    "match": {
+      "username.pinyin": "pinyin"
+    }
+  }
+}
+```
 
 ### Dynamic mapping
 
@@ -350,6 +548,37 @@ Elasticsearch最重要的特性之一是，它试图摆脱您的阻碍，让您�
 | array | 取决于数组中的第一个非空值。|
 | string |要么是一个日期字段(如果值通过了日期检测)，要么是一个双字段或长字段(如果值通过了数值检测)，要么是一个带有关键字子字段的文本字段。|
 
+```http request
+DELETE test_index
+PUT /test_index/_doc/1
+{
+  "username":"alfred",
+  "age":1.2
+}
+
+GET test_index/_search
+{
+  "query": {
+    "match": {
+      "username.keyword": "alfred"
+    }
+  }
+}
+```
+
+当你索引一个包含新字段的文档——一个之前没有的字段——Elasticsearch将使用动态映射猜测字段类型，这类型来自于JSON的基本数据类型，使用以下规则：
+
+|JSON type                          |          Field type    |
+|-----------------------------------|------------------------|
+|Boolean: `true` or `false`         |          `"boolean"`   |
+|Whole number: `123`                |          `"long"`      |
+|Floating point: `123.45`           |          `"double"`    |
+|String, valid date: `"2014-09-15"` |          `"date"`      |
+|String: `"foo bar"`                |          `"string"`    |
+
+> ### 注意
+> 这意味着，如果你索引一个带引号的数字——`"123"`，它将被映射为`"string"`类型，而不是`"long"`类型。然而，如果字段已经被映射为`"long"`类型，Elasticsearch将尝试转换字符串为long，并在转换失败时会抛出异常。
+
 ### 日期自动识别
 
 日期的自动识别可以自行配置日期的格式，默认情况下是：
@@ -364,38 +593,50 @@ dynamic_date_formats：可以自定义日期类型
 date_detection：可以关闭日期自动识别机制（默认开启）
 首先创建一个日期自动识别的索引：
 ```http request
-PUT my_index6
+DELETE my_index
+PUT my_index
 {
   "mappings": {
-    "doc": {
-      "dynamic_date_formats": ["MM/dd/yyyy"]
-    }
+    "dynamic_date_formats": ["MM/dd/yyyy"]
   }
 }
 
-PUT my_index6/doc/1
+PUT my_index/_doc/1
 {
   "create_time": "09/21/2016"
 }
 
-GET my_index6/_mapping
-
+GET my_index/_mapping
 ```
-![](/img/in-post/2019-03-14/7.png)
+```json
+{
+  "my_index" : {
+    "mappings" : {
+      "dynamic_date_formats" : [
+        "MM/dd/yyyy"
+      ],
+      "properties" : {
+        "create_time" : {
+          "type" : "date",
+          "format" : "MM/dd/yyyy"
+        }
+      }
+    }
+  }
+}
+```
 
 关闭日期自动识别可以如下：
 
 ```http request
-PUT my_index7
+PUT my_index1
 {
   "mappings": {
-    "_doc": {
-      "date_detection": false
-    }
+    "date_detection": false
   }
 }
 
-PUT my_index7/_doc/1 
+PUT my_index1/_doc/1 
 {
   "create": "2015/09/02"
 }
@@ -404,45 +645,122 @@ PUT my_index7/_doc/1
 自定义时间类型:
 
 ```http request
-PUT my_index8
+PUT my_index2
 {
   "mappings": {
-    "_doc": {
-      "dynamic_date_formats": ["MM/dd/yyyy"]
-    }
+    "dynamic_date_formats": ["MM/dd/yyyy"]
   }
 }
 
-PUT my_index8/_doc/1
+PUT my_index2/_doc/1
 {
   "create_date": "09/25/2015"
 }
 ```
-
-![](/img/in-post/2019-03-14/8.png)
 
 ### 数字自动识别
 
 字符串为数字的时候，默认不会自动识别为整型，因为字符串中出现数字是完全合理的。numeric_detection 可以开启字符串中数字的自动识别
 
 ```http request
-PUT my_index9
+DELETE my_index3
+PUT my_index3
 {
   "mappings": {
-    "_doc": {
-      "numeric_detection": true
-    }
+    "numeric_detection": true
   }
 }
 
-PUT my_index9/_doc/1
+PUT my_index3/_doc/1
 {
   "my_float":   "1.0", 
   "my_integer": "1" 
 }
 
-GET my_index9
+GET my_index3/_mapping
 ```
 
-![](/img/in-post/2019-03-14/9.png)
+```json
+{
+  "my_index3" : {
+    "mappings" : {
+      "numeric_detection" : true,
+      "properties" : {
+        "my_float" : {
+          "type" : "float"
+        },
+        "my_integer" : {
+          "type" : "long"
+        }
+      }
+    }
+  }
+}
+```
 
+### Dynamic Template
+
+允许根据es自动识别的数据类型、字段名等动态设定字段类型，可以实现如下效果:
+- 所有字符串都设定为`keyword`类型，即默认不分词
+- 所有以message开头字段都设定为`text`类型，即分词
+- 所有以long_开头的字段都设定为`long`类型
+- 所有自动匹配为double类型的都设定为`float`类型，以节省空间
+
+```http request
+PUT test_index
+{
+  "mappings": {
+    "dynamic_templates": [
+      {
+        "strings": {
+          "match_mapping_type": "string",
+          "mapping": {
+            "type": "keyword"
+          }
+        }
+      }
+    ]
+  }
+}
+
+PUT test_index/_doc/1
+{
+  "name": "alfred"
+}
+
+GET test_index/_mapping 
+```
+
+匹配规则一般有如下几个参数：
+
+- match_mapping_type: 匹配es自动识别的字段类型，如`boolean`,`long`,`string`等
+- match,unmatch：匹配字段名
+- path_match,path_unmatch: 匹配路径
+
+**设置以message开头的字段都设置为text类型 （顺序由上而下）**
+```http request
+PUT test_index
+{
+  "mappings": {
+    "dynamic_templates": [
+      {
+        "message_as_text": {
+          "match_mapping_type": "string",
+          "match": "message*",
+          "mapping": {
+            "type": "text"
+          }
+        }
+      },
+      {
+        "strings_as_keywords": {
+          "match_mapping_type": "string",
+          "mapping": {
+            "type": "keyword"
+          }
+        }
+      }
+    ]
+  }
+}
+```

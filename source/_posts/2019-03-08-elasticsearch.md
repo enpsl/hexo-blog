@@ -257,6 +257,15 @@ GET /accounts/person/_search
 
 ![](/img/in-post/2019-03-13/2.png)
 
+es存储的是一个json格式的文档，其中包含多个字段，每个字段都会有自己的倒排索引，类似这种
+```json
+{
+  "username": "huangtoufa",
+  "job": "programmer"
+}
+```
+job和username都有自己的倒排索引
+
 ### 分词介绍
 
 分词是指将文本转换成一系列单词( term or token )的过程,也可以叫做文本分析,在es里面称为Analysis
