@@ -1,12 +1,12 @@
 ---
 layout:     post
-title:      "elastic入门(二)"
-subtitle:   "elastic入门(二)"
+title:      "elasticsearch入门(二)"
+subtitle:   "elasticsearch入门(二)"
 date:       2019-03-14 14:30:00
 author:     "Psl"
 catalog:    true
 tags:
-  - elastic
+  - elasticsearch
 ---
 
 ## mapping

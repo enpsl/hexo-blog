@@ -1,12 +1,12 @@
 ---
 layout:     post
-title:      "elastic入门"
-subtitle:   "elastic入门"
+title:      "elasticsearch入门"
+subtitle:   "elasticsearch入门"
 date:       2019-03-08 14:30:00
 author:     "Psl"
 catalog:    true
 tags:
-  - elastic
+  - elasticsearch
 ---
 
 ## 入门介绍
@@ -359,27 +359,28 @@ es自带如下的分词器
 CharacterFilter：
 
 当自带的分词无法满足需求时,可以自定义分词
-　　-通过自定义Character Filters, Tokenizer和Token Filter实现. Character Filters
-　　-在Tokenizer之前对原始文本进行处理,比如增加、删除或替换字符等
-　　-自带的如下:
-　　　　-HTML Strip去除html标签和转换html实体
-　　　　-Mapping进行字符替换操作
-　　　　-Pattern Replace进行正则匹配替换
-　　-会影响后续tokenizer解析的postion和offset信息
+- 通过自定义Character Filters, Tokenizer和Token Filter实现. Character Filters
+- 在Tokenizer之前对原始文本进行处理,比如增加、删除或替换字符等
+- 自带的如下:
+    - HTML Strip去除html标签和转换html实体
+    - Mapping进行字符替换操作
+    - Pattern Replace进行正则匹配替换
+- 会影响后续tokenizer解析的postion和offset信息
 
  Character Filters测试时可以采用如下api :
 ![](/img/in-post/2019-03-13/14.png)
 
 Tokenizer：
 Tokenizer
-　　-将原始文本按照一定规则切分为单词( term or token )
-　　-自带的如下:
-　　　　-standard按照单词进行分割
-　　　　-letter按照非字符类进行分割
-　　　　-whitespace按照空格进行分割
-　　　　-UAX URL Email按照standard分割,但不会分割邮箱和url
-　　　　-NGram和Edge NGram连词分割
-　　　　-Path Hierarchy按照文件路径进行切割
+- 将原始文本按照一定规则切分为单词( term or token )
+- 自带的如下:
+    - standard按照单词进行分割
+    - letter按照非字符类进行分割
+    - whitespace按照空格进行分割
+    - UAX URL Email按照standard分割,但不会分割邮箱和url
+    - NGram和Edge NGram连词分割
+    - Path Hierarchy按照文件路径进行切割
+    
 api:
 
 ```http request
@@ -420,12 +421,12 @@ Result:
 
 TokenFilter:
 Token Filters
-　　-对于tokenizer输出的单词( term )进行增加、删除、修改等操作
-　　-自带的如下:
-　　　　-lowercase将所有term转换为小写
-　　　　-stop删除stop words
-　　　　-NGram和Edge NGram连词分割
-　　　　-Synonym添加近义词的term
+- 对于tokenizer输出的单词( term )进行增加、删除、修改等操作
+- 自带的如下:
+    - lowercase将所有term转换为小写
+    - stop删除stop words
+    - NGram和Edge NGram连词分割
+    - Synonym添加近义词的term
 
 api:
 
@@ -605,8 +606,8 @@ POST test_index/_analyze
 #### 分词使用说明
 
 分词会在如下两个时机使用:
-　　- 创建或更新文档时(Index Time ) ,会对相应的文档进行分词处理
-　　- 查询时( Search Time ) ,会对查询语句进行分词
+- 创建或更新文档时(Index Time ) ,会对相应的文档进行分词处理
+- 查询时( Search Time ) ,会对查询语句进行分词
 
 #### 索引时分词
 索引时分词是通过配置Index Mapping中每个字段的analyzer属性实现的如下：不指定分词时,使用默认standard
@@ -616,8 +617,8 @@ POST test_index/_analyze
 #### 查询时分词
 
 查询时分词的指定方式有如下几种:
-　　- 查询的时候通过analyzer指定分词器
-　　- 通过index mapping设置search_analyzer实现
+- 查询的时候通过analyzer指定分词器
+- 通过index mapping设置search_analyzer实现
 
 ![](/img/in-post/2019-03-13/18.png)
 

@@ -11,7 +11,7 @@ tags:
 
 ## hexo部署流程
 
- 开启本地web服务:
+- 开启本地web服务:
 ```bash
 hexo s
 ```
@@ -40,7 +40,7 @@ hexo d
 "gulp-uglify": "^1.5.3",
 ```
 
-###建立 gulpfile.js 文件
+### 建立 gulpfile.js 文件
 在 Hexo 的根目录建立 gulpfile.js
 ```javascript
 var gulp = require('gulp');
