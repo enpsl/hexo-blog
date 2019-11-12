@@ -764,3 +764,45 @@ PUT test_index
   }
 }
 ```
+
+### Index Template
+
+`Index Template`帮你设定mappings和settings,并按照一定规则，自动匹配到新创建的索引上
+
+- 仅生效与新创建的索引，不会影响之前的索引
+- 可设定多个，会自动`merge`在一起
+- 可指定`order`值,控制merging的过程
+
+```http request
+PUT _template/default_template
+{
+  "index_patterns": ["*"],
+  "order": 0,
+  "version": 1,
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas": 1
+  }
+}
+
+PUT _template/default_template1
+{
+  "index_patterns": ["*"],
+  "order": 1,
+  "version": 1,
+  "settings": {
+    "number_of_shards": 3,
+    "number_of_replicas": 1
+  }
+}
+```
+
+工作方式:
+
+当一个索引被创建时：
+- 应用默认的settings和mappings
+- 应用`order`数值低的index template的设定
+- 应用`order`高的index template的设定，之前设定被覆盖
+- 用户指定的settings和mappings会覆盖默认的模版设定
+
+>上面的两个设定都会被应用，但是order高的会覆盖低的设定
